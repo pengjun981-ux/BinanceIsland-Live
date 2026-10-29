@@ -160,7 +160,24 @@ final class PriceStore: ObservableObject {
 
     // MARK: Live Activity
     func startActivity() {
-        activity.start(symbol: islandSymbol, ticker: tickers[islandSymbol], redUp: redUp)
+        let sym = islandSymbol
+        if let t = tickers[sym] {
+            activity.start(symbol: sym, ticker: t, redUp: redUp)
+            return
+        }
+        Task {
+            let t = await fetchREST(sym)
+            if let t { tickers[sym] = t }
+            activity.start(symbol: sym, ticker: t, redUp: redUp)
+        }
+    }
+
+    private func fetchREST(_ s: String) async -> Ticker? {
+        guard let url = URL(string: "\(host.restBase)/api/v3/ticker/24hr?symbol=\(s)"),
+              let (data, resp) = try? await session.data(from: url),
+              (resp as? HTTPURLResponse)?.statusCode == 200,
+              let r = try? JSONDecoder().decode(RestTicker24h.self, from: data) else { return nil }
+        return r.ticker
     }
 
     func stopActivity() {

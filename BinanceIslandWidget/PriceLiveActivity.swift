@@ -44,6 +44,7 @@ struct PriceLiveActivity: Widget {
                 DynamicIslandExpandedRegion(.center) {
                     Text(PriceFormat.price(s.price))
                         .font(.title2.monospacedDigit()).bold().foregroundColor(color)
+                        .lineLimit(1).minimumScaleFactor(0.5)
                 }
                 DynamicIslandExpandedRegion(.bottom) {
                     HStack {
@@ -54,19 +55,21 @@ struct PriceLiveActivity: Widget {
                         Text(s.updatedAt, style: .time)
                     }
                     .font(.caption.monospacedDigit()).foregroundColor(.secondary)
+                    .lineLimit(1).minimumScaleFactor(0.6)
                 }
             } compactLeading: {
                 HStack(spacing: 3) {
                     CoinIcon(symbol: a.symbol)
-                    Text(PriceFormat.base(a.symbol)).font(.caption2).bold()
+                    Text(PriceFormat.base(a.symbol)).font(.caption2).bold().lineLimit(1).minimumScaleFactor(0.6)
                 }
             } compactTrailing: {
                 Text(PriceFormat.price(s.price))
                     .font(.caption2.monospacedDigit()).bold().foregroundColor(color)
+                    .lineLimit(1).minimumScaleFactor(0.5)
             } minimal: {
                 Text(PriceFormat.short(s.price))
                     .font(.system(size: 10).monospacedDigit()).foregroundColor(color)
-                    .minimumScaleFactor(0.5)
+                    .lineLimit(1).minimumScaleFactor(0.5)
             }
         }
     }
