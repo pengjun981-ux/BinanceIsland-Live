@@ -2,7 +2,7 @@ import ActivityKit
 import WidgetKit
 import SwiftUI
 
-private func tint(_ change: Double, redUp: Bool) -> Color {
+private func priceTint(_ change: Double, redUp: Bool) -> Color {
     if change == 0 { return .white }
     let up = change > 0
     return (up == redUp) ? .red : .green
@@ -29,7 +29,7 @@ struct PriceLiveActivity: Widget {
         } dynamicIsland: { context in
             let s = context.state
             let a = context.attributes
-            let color = tint(s.changePercent, redUp: a.redUp)
+            let color = priceTint(s.changePercent, redUp: a.redUp)
             return DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {
                     HStack(spacing: 4) {
@@ -79,7 +79,7 @@ struct LockScreenView: View {
     let attributes: PriceActivityAttributes
     let state: PriceActivityAttributes.ContentState
     var body: some View {
-        let color = tint(state.changePercent, redUp: attributes.redUp)
+        let color = priceTint(state.changePercent, redUp: attributes.redUp)
         HStack {
             VStack(alignment: .leading, spacing: 4) {
                 HStack(spacing: 4) {
