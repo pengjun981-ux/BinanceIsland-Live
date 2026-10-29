@@ -1,0 +1,62 @@
+name: BinanceIsland
+options:
+  bundleIdPrefix: com.uzi
+  deploymentTarget:
+    iOS: "16.2"
+  xcodeVersion: "15.0"
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    CODE_SIGNING_ALLOWED: "NO"
+    CODE_SIGNING_REQUIRED: "NO"
+    CODE_SIGN_IDENTITY: ""
+    DEVELOPMENT_TEAM: ""
+    MARKETING_VERSION: "1.0.0"
+    CURRENT_PROJECT_VERSION: "1"
+targets:
+  BinanceIsland:
+    type: application
+    platform: iOS
+    sources:
+      - BinanceIsland
+      - Shared
+    dependencies:
+      - target: BinanceIslandWidget
+        embed: true
+        codeSign: false
+    info:
+      path: BinanceIsland/Info.plist
+      properties:
+        CFBundleDisplayName: 币安灵动岛
+        UILaunchScreen: {}
+        NSSupportsLiveActivities: true
+        NSSupportsLiveActivitiesFrequentUpdates: true
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.uzi.binanceisland
+        PRODUCT_NAME: BinanceIsland
+        TARGETED_DEVICE_FAMILY: "1"
+        GENERATE_INFOPLIST_FILE: "NO"
+  BinanceIslandWidget:
+    type: app-extension
+    platform: iOS
+    sources:
+      - BinanceIslandWidget
+      - Shared
+    dependencies:
+      - sdk: WidgetKit.framework
+      - sdk: SwiftUI.framework
+    info:
+      path: BinanceIslandWidget/Info.plist
+      properties:
+        CFBundleDisplayName: BinanceIslandWidget
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.uzi.binanceisland.widget
+        PRODUCT_NAME: BinanceIslandWidget
+        TARGETED_DEVICE_FAMILY: "1"
+        GENERATE_INFOPLIST_FILE: "NO"
+        APPLICATION_EXTENSION_API_ONLY: "YES"

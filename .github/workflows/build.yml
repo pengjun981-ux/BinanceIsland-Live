@@ -1,0 +1,61 @@
+name: Build unsigned IPA
+
+on:
+  push:
+    branches: ["**"]
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Select Xcode
+        run: |
+          sudo xcode-select -s /Applications/Xcode_16.app 2>/dev/null || sudo xcode-select -s "$(ls -d /Applications/Xcode_16*.app | sort -V | tail -1)"
+          xcodebuild -version
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Generate project
+        run: xcodegen generate
+
+      - name: Build (unsigned)
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project BinanceIsland.xcodeproj \
+            -scheme BinanceIsland \
+            -configuration Release \
+            -sdk iphoneos \
+            -destination 'generic/platform=iOS' \
+            -derivedDataPath build \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" \
+            build | tee xcodebuild.log
+
+      - name: Package IPA
+        run: |
+          APP=build/Build/Products/Release-iphoneos/BinanceIsland.app
+          test -d "$APP"
+          test -d "$APP/PlugIns/BinanceIslandWidget.appex" || { echo "widget appex missing"; ls -R "$APP"; exit 1; }
+          rm -rf Payload && mkdir Payload
+          cp -R "$APP" Payload/
+          zip -qry BinanceIsland.ipa Payload
+          ls -lh BinanceIsland.ipa
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: BinanceIsland-ipa
+          path: BinanceIsland.ipa
+
+      - name: Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: BinanceIsland.ipa
